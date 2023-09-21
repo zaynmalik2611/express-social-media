@@ -1,6 +1,14 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import passport from "passport";
 const authRouter = express.Router();
+
+const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
+  if (req.user) {
+    next();
+  } else {
+    res.sendStatus(401);
+  }
+};
 
 authRouter.get(
   "/google",
@@ -19,14 +27,20 @@ authRouter.get(
   }
 );
 
-authRouter.get("/success", (req, res) => {
-  console.log("User is authenticated");
-  res.send("Success");
+authRouter.get("/success", isLoggedIn, (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "successful",
+    user: req.user,
+    //cookies: req.cookies
+  });
 });
 
 authRouter.get("/failed", (req, res) => {
-  console.log("User is not authenticated");
-  res.send("Failed");
+  res.status(401).json({
+    success: false,
+    message: "failure",
+  });
 });
 
 authRouter.get("/logout", (req, res) => {
