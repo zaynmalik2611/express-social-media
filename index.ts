@@ -10,7 +10,7 @@ import dotenv from "dotenv";
 import session from "express-session";
 import passport from "passport";
 import postsRouter from "./src/routes/posts.router";
-
+import authRouter from "./src/routes/auth.router";
 //For env File
 dotenv.config();
 import "./src/utils/google.strategy";
@@ -29,41 +29,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get(
-  "/google",
-  passport.authenticate("google", {
-    scope: ["email", "profile"],
-  })
-);
-
-app.get(
-  "/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/failed",
-  }),
-  function (req, res) {
-    res.redirect("/success");
-  }
-);
-
-app.get("/failed", (req, res) => {
-  console.log("User is not authenticated");
-  res.send("Failed");
-});
-
-app.get("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.log("Error while destroying session:", err);
-    } else {
-      req.logout(() => {
-        console.log("You are logged out");
-        res.redirect("/home");
-      });
-    }
-  });
-});
-
+app.use("/auth", authRouter);
 app.use("/posts", postsRouter);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

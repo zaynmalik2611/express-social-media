@@ -1,19 +1,30 @@
-const googleLoginOrSignUp = async (googleProfile: any, cb) => {
-  if (userExists(googleProfile.googleId)) {
-    // User exists, fetch the user and call the callback
-    getUserByGoogleId(googleProfile.googleId, function (err, user) {
-      if (err) {
-        return cb(err);
-      }
+import prisma from "./prisma";
+import { Profile, VerifyCallback } from "passport-google-oauth20";
+
+export const googleLoginOrSignUp = async (
+  profile: Profile,
+  cb: VerifyCallback
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        email: profile._json.email,
+      },
+    });
+    if (user) {
       return cb(null, user);
-    });
-  } else {
-    // User does not exist, create a new user (you'll need to define this function)
-    createNewUser(googleProfile, function (err, newUser) {
-      if (err) {
-        return cb(err);
-      }
-      return cb(null, newUser);
-    });
+    } else {
+      const createdUser = await prisma.user.create({
+        data: {
+          email: profile._json.email ?? "",
+          firstName: profile._json.given_name ?? "",
+          lastName: profile._json.family_name ?? "",
+        },
+      });
+      return cb(null, createdUser);
+    }
+  } catch (error: any) {
+    console.log("error: ", error);
+    return cb(error);
   }
 };

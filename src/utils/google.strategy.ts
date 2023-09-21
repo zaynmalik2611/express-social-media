@@ -1,23 +1,26 @@
 import { User } from "@prisma/client";
-import passport, { Profile } from "passport";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import passport from "passport";
+import {
+  Strategy as GoogleStrategy,
+  Profile,
+  VerifyCallback,
+} from "passport-google-oauth20";
+import { googleLoginOrSignUp } from "../services/auth.service";
 
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
-      callbackURL: "http://localhost:5000/google/callback",
+      callbackURL: "http://localhost:5000/auth/google/callback",
     },
-    function (accessToken: string, refreshToken: string, profile: Profile, cb) {
-      console.log(
-        "here",
-        profile.emails !== undefined ? profile.emails[0].value : ""
-      );
-      return cb(null, profile);
-      //   googleLoginOrSignUp({ googleId: profile.id }, function (err, user) {
-      //     return cb(null, profile);
-      //   });
+    function (
+      accessToken: string,
+      refreshToken: string,
+      profile: Profile,
+      cb: VerifyCallback
+    ) {
+      googleLoginOrSignUp(profile, cb);
     }
   )
 );
