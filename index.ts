@@ -8,6 +8,7 @@ import express, {
 } from "express";
 import dotenv from "dotenv";
 import session from "express-session";
+import cors from "cors";
 import passport from "passport";
 import postsRouter from "./src/routes/posts.router";
 import authRouter from "./src/routes/auth.router";
@@ -28,6 +29,13 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
 
 app.use("/auth", authRouter);
 app.use("/posts", postsRouter);

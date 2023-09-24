@@ -9,5 +9,13 @@ const getAllPosts = async (req: Request, res: Response, next: NextFunction) => {
     next(err);
   }
 };
+const postPost = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json(await postPost());
+  } catch (error) {
+    console.log("error: ", err);
+    next(err);
+  }
+};
 
 export { getAllPosts };

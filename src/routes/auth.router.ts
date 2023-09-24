@@ -20,11 +20,9 @@ authRouter.get(
 authRouter.get(
   "/google/callback",
   passport.authenticate("google", {
+    successRedirect: process.env.CLIENT_URL,
     failureRedirect: "/auth/failed",
-  }),
-  function (req, res) {
-    res.redirect("/auth/success");
-  }
+  })
 );
 
 authRouter.get("/success", isLoggedIn, (req, res) => {
@@ -32,7 +30,7 @@ authRouter.get("/success", isLoggedIn, (req, res) => {
     success: true,
     message: "successful",
     user: req.user,
-    //cookies: req.cookies
+    // cookies: req.cookies,
   });
 });
 
@@ -50,7 +48,7 @@ authRouter.get("/logout", (req, res) => {
     } else {
       req.logout(() => {
         console.log("You are logged out");
-        res.redirect("/home");
+        res.redirect(String(process.env.CLIENT_URL));
       });
     }
   });
