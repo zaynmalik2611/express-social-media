@@ -4,13 +4,19 @@ const getAll = async () => {
   return { posts };
 };
 
-const postPost = async () => {
+const makePost = async (email: string, title: string, body: string) => {
   const createdPost = await prisma.post.create({
     data: {
-      title: "",
-      authorId: req.user.id,
+      title: title,
+      body: body,
+      author: {
+        connect: {
+          email: email,
+        },
+      },
     },
   });
+  return { createdPost };
 };
 
-export { getAll };
+export { getAll, makePost };

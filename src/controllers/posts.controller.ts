@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { getAll } from "../services/posts.service";
+import { getAll, makePost } from "../services/posts.service";
 
 const getAllPosts = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -9,13 +9,15 @@ const getAllPosts = async (req: Request, res: Response, next: NextFunction) => {
     next(err);
   }
 };
-const postPost = async (req: Request, res: Response, next: NextFunction) => {
+
+const createPost = async (req: Request, res: Response, next: NextFunction) => {
+  const { title, body } = req.body;
   try {
-    res.json(await postPost());
+    res.json(await makePost(req.user?.email ?? "", title, body));
   } catch (error) {
-    console.log("error: ", err);
-    next(err);
+    console.log("error: ", error);
+    next(error);
   }
 };
 
-export { getAllPosts };
+export { getAllPosts, createPost };
